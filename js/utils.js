@@ -25,13 +25,24 @@ export const ROADMAP_STATUSES = [
   { value: 'completed', label: 'Completed' }
 ];
 
+export function toLocalISO(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+export function parseLocalDate(dateStr) {
+  return new Date(dateStr + 'T12:00:00');
+}
+
 export function todayISO() {
-  return new Date().toISOString().split('T')[0];
+  return toLocalISO(new Date());
 }
 
 export function formatDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  return date.toLocaleDateString('en-US', {
+  const date = parseLocalDate(dateStr);
+  return date.toLocaleDateString(undefined, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -40,8 +51,8 @@ export function formatDate(dateStr) {
 }
 
 export function formatShortDate(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  return date.toLocaleDateString('en-US', {
+  const date = parseLocalDate(dateStr);
+  return date.toLocaleDateString(undefined, {
     weekday: 'short',
     month: 'short',
     day: 'numeric'
@@ -49,13 +60,30 @@ export function formatShortDate(dateStr) {
 }
 
 export function getDayName(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  return date.toLocaleDateString('en-US', { weekday: 'long' });
+  const date = parseLocalDate(dateStr);
+  return date.toLocaleDateString(undefined, { weekday: 'long' });
 }
 
 export function getDayOfWeek(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
-  return date.getDay();
+  return parseLocalDate(dateStr).getDay();
+}
+
+export function formatNowClock() {
+  return new Date().toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+export function formatNowDateTime() {
+  const now = new Date();
+  return now.toLocaleDateString(undefined, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }) + ' · ' + formatNowClock();
 }
 
 export function formatDuration(minutes) {
@@ -121,7 +149,7 @@ export function hideModal() {
 }
 
 export function getWeekRange(dateStr) {
-  const date = new Date(dateStr + 'T00:00:00');
+  const date = parseLocalDate(dateStr);
   const day = date.getDay();
   const diffToMonday = day === 0 ? -6 : 1 - day;
   const monday = new Date(date);
@@ -129,15 +157,15 @@ export function getWeekRange(dateStr) {
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   return {
-    start: monday.toISOString().split('T')[0],
-    end: sunday.toISOString().split('T')[0]
+    start: toLocalISO(monday),
+    end: toLocalISO(sunday)
   };
 }
 
 export function addDays(dateStr, days) {
-  const date = new Date(dateStr + 'T00:00:00');
+  const date = parseLocalDate(dateStr);
   date.setDate(date.getDate() + days);
-  return date.toISOString().split('T')[0];
+  return toLocalISO(date);
 }
 
 export function debounce(fn, delay) {
