@@ -3,7 +3,7 @@
  */
 
 import { initDatabase } from './database.js';
-import { renderDashboard, refreshDashboard } from './dashboard.js';
+import { renderDashboard, refreshDashboard, updateDashboardClock } from './dashboard.js';
 import { renderTasks } from './tasks.js';
 import { renderTimer } from './timer.js';
 import { renderNotes } from './notes.js';
@@ -12,7 +12,9 @@ import { renderRoadmap } from './roadmap.js';
 import { renderReview } from './review.js';
 import { renderHistory } from './history.js';
 import { renderSettings } from './settings.js';
-import { hideModal } from './utils.js';
+import { isAuthenticated, setupLoginForm, showLoginScreen } from './auth.js';
+import { initTheme, setupThemeToggle } from './theme.js';
+import { hideModal, todayISO } from './utils.js';
 
 const sections = {
   dashboard: { render: renderDashboard, el: 'section-dashboard' },
@@ -28,6 +30,8 @@ const sections = {
 };
 
 let currentSection = 'dashboard';
+let lastKnownDate = todayISO();
+let clockInterval = null;
 
 function navigateTo(sectionId) {
   if (!sections[sectionId]) return;
@@ -95,12 +99,30 @@ function setupModal() {
   });
 }
 
-async function init() {
+function setupLiveClock() {
+  updateDashboardClock();
+  if (clockInterval) clearInterval(clockInterval);
+  clockInterval = setInterval(() => {
+    updateDashboardClock();
+
+    const currentDate = todayISO();
+    if (currentDate !== lastKnownDate) {
+      lastKnownDate = currentDate;
+      sections[currentSection]?.render();
+    }
+  }, 1000);
+}
+
+async function startApp() {
   try {
+    document.getElementById('app').classList.remove('hidden');
     await initDatabase();
     setupNavigation();
     setupSidebar();
     setupModal();
+    initTheme();
+    setupThemeToggle();
+    setupLiveClock();
 
     const hash = window.location.hash.slice(1);
     navigateTo(sections[hash] ? hash : 'dashboard');
@@ -127,6 +149,19 @@ async function init() {
       location.reload();
     });
   }
+}
+
+async function init() {
+  document.getElementById('loading-screen').classList.remove('hidden');
+
+  if (!isAuthenticated()) {
+    document.getElementById('loading-screen').classList.add('hidden');
+    showLoginScreen();
+    setupLoginForm(startApp);
+    return;
+  }
+
+  await startApp();
 }
 
 document.addEventListener('DOMContentLoaded', init);
