@@ -5,7 +5,7 @@
 import * as db from './database.js';
 import {
   todayISO, formatDate, getDayOfWeek, formatDuration,
-  categoryBadgeClass, escapeHtml, debounce
+  categoryBadgeClass, escapeHtml, debounce, formatNowClock
 } from './utils.js';
 import { getScheduleForDay, getDayFocus, getDayThemes } from './schedule.js';
 
@@ -37,7 +37,10 @@ export function renderDashboard() {
   const quickNotes = db.getQuickNotes(date);
 
   container.innerHTML = `
-    <div class="dashboard-date">${formatDate(date)}</div>
+    <div class="dashboard-datetime">
+      <div class="dashboard-date">${formatDate(date)}</div>
+      <div class="dashboard-clock" id="dashboard-clock">${formatNowClock()}</div>
+    </div>
     <div class="dashboard-day">${themes.name}</div>
 
     <div class="schedule-overview">
@@ -154,4 +157,12 @@ function bindEvents() {
 
 export function refreshDashboard() {
   if (container) renderDashboard();
+}
+
+export function updateDashboardClock() {
+  const clock = document.getElementById('dashboard-clock');
+  const sidebarClock = document.getElementById('sidebar-clock');
+  const time = formatNowClock();
+  if (clock) clock.textContent = time;
+  if (sidebarClock) sidebarClock.textContent = time;
 }
