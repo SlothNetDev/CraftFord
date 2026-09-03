@@ -394,7 +394,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--overlay, rgba(0, 0, 0, 0.6));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -598,10 +598,21 @@
 }
 
 /* Dashboard specific */
+.dashboard-datetime {
+  margin-bottom: 0.25rem;
+}
+
 .dashboard-date {
   font-size: 1.125rem;
   color: var(--text-secondary);
-  margin-bottom: 0.25rem;
+}
+
+.dashboard-clock {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 0.25rem;
 }
 
 .dashboard-day {
