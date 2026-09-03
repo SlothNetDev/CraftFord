@@ -5,6 +5,8 @@
  * can be swapped later without changing consumer modules.
  */
 
+import { todayISO, addDays } from './utils.js';
+
 const DB_NAME = 'devforge-db';
 const DB_STORE = 'database';
 const DB_KEY = 'sqlite';
@@ -590,24 +592,20 @@ export function calculateStreak() {
 
   if (!dates.length) return 0;
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = todayISO();
   let streak = 0;
   let checkDate = today;
 
   const dateSet = new Set(dates);
 
   if (!dateSet.has(today)) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    checkDate = yesterday.toISOString().split('T')[0];
+    checkDate = addDays(today, -1);
     if (!dateSet.has(checkDate)) return 0;
   }
 
   while (dateSet.has(checkDate)) {
     streak++;
-    const d = new Date(checkDate + 'T00:00:00');
-    d.setDate(d.getDate() - 1);
-    checkDate = d.toISOString().split('T')[0];
+    checkDate = addDays(checkDate, -1);
   }
 
   return streak;
