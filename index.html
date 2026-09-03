@@ -5,12 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="DevForge — Personal daily learning and coding dashboard">
   <title>DevForge</title>
+  <script>
+    (function () {
+      var theme = localStorage.getItem('devforge-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚒</text></svg>">
 </head>
 <body>
-  <div id="app">
+  <!-- Login -->
+  <div id="login-screen" class="login-screen hidden">
+    <div class="login-card">
+      <div class="login-header">
+        <span class="logo-icon" aria-hidden="true">⚒</span>
+        <h1>DevForge</h1>
+        <p>Sign in to continue</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-username">Username</label>
+          <input type="text" id="login-username" class="form-input" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-input" autocomplete="current-password" required>
+        </div>
+        <p id="login-error" class="login-error" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Sign In</button>
+      </form>
+      <p class="login-hint">Default: devforge / devforge — change in Settings after login.</p>
+    </div>
+  </div>
+
+  <div id="app" class="hidden">
     <aside id="sidebar" class="sidebar" aria-label="Main navigation">
       <div class="sidebar-header">
         <span class="logo-icon" aria-hidden="true">⚒</span>
@@ -48,6 +78,10 @@
           <span class="nav-icon" aria-hidden="true">⚙</span> Settings
         </a>
       </nav>
+      <div class="sidebar-footer">
+        <div id="sidebar-clock" class="sidebar-clock" aria-live="polite">--:--:--</div>
+        <button type="button" class="btn btn-ghost btn-sm theme-toggle-btn" data-theme-toggle aria-label="Switch theme">☀ Light Mode</button>
+      </div>
       <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle navigation" aria-expanded="true">☰</button>
     </aside>
 
